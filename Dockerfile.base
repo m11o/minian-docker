@@ -1,0 +1,7 @@
+FROM python:3.8
+
+RUN apt-get update --allow-releaseinfo-change && \
+    apt-get install -y ffmpeg
+
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir --upgrade git+https://github.com/denisecailab/minian
