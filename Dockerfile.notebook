@@ -1,0 +1,8 @@
+FROM velonica2227/minian-docker-base:latest
+
+CMD ["jupyter", "notebook", "-y", \
+    "--no-browser", \
+    "--NotebookApp.token", "minian", \
+    "--ip", "0.0.0.0", \
+    "--port", "8000", \
+    "--allow-root"]
