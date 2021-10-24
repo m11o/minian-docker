@@ -17,11 +17,13 @@ MINIAN_NOTEBOOK_PORT = os.environ.get('MINIAN_NOTEBOOK_PORT', 8000)
 
 class Docker:
     def __init__(self, container_type):
+        self.logger = self._build_logger()
+
         self.container_type = container_type
         self.image_name = self._image_name()
         self.container_name = self._container_name()
 
-        self.logger = self._build_logger()
+        self._check_enable_container_type()
 
     def update(self):
         self.logger.info('Update or fetching Docker image for %s' % self.image_name)
@@ -111,6 +113,11 @@ class Docker:
             gid=host_gid
         )
         return commands.strip()
+
+    def _check_enable_container_type(self):
+        if self.container_type not in ENABLE_CONTAINER_TYPES:
+            self.logger.error('The container is not available!')
+            sys.exit()
 
     @staticmethod
     def _fetch_host_info():
