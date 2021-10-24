@@ -29,16 +29,7 @@ build() {
 }
 
 __build() {
-    remote_name=$1
     local_name=$2
-
-    uname=$(id -un)
-    uid=$(id -u)
-    gname=$(id -gn)
-    gid=$(id -g)
-
-    log "Configuring a local container for user $uname ($uid) in group $gname ($gid)"
-
     $DOCKER build -t ${local_name} - ${__docker_structure}
 
     if [ $? -ne 0 ]; then
@@ -49,6 +40,15 @@ __build() {
 }
 
 __docker_structure() {
+    remote_name=$1
+
+    uname=$(id -un)
+    uid=$(id -u)
+    gname=$(id -gn)
+    gid=$(id -g)
+
+    log "Configuring a local container for user $uname ($uid) in group $gname ($gid)"
+
     echo <<EOS
     from ${remote_name}
 
@@ -61,4 +61,13 @@ __docker_structure() {
 
     user $uname
 EOS
+}
+
+bash() {
+    extra_args="$@"
+    update base || exit 1
+    build base || exit 1
+    args="$(get_mount_args) ${extra_arga}"
+
+    $DOCKER run -it --rm $args $(get_local_container_name base) bash
 }
