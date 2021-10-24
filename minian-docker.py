@@ -13,7 +13,16 @@ __version__ = "0.0.0.1"
 
 ENABLE_CONTAINER_TYPES = ['bash', 'notebook']
 MINIAN_NOTEBOOK_PORT = os.environ.get('MINIAN_NOTEBOOK_PORT', 8000)
+MOTD = """
+          ____()()
+         /      @@
+   `~~~~~\_;m__m._>o
+ _____  _____  _____  _____  _____  _____       ____   _____  _____  _____  _____  _____
+|     ||     ||   | ||     ||  _  ||   | | ___ |    \ |     ||     ||  |  ||   __|| __  |
+| | | ||-   -|| | | ||-   -||     || | | ||___||  |  ||  |  ||   --||    -||   __||    -|
+|_|_|_||_____||_|___||_____||__|__||_|___|     |____/ |_____||_____||__|__||_____||__|__|
 
+"""
 
 class Docker:
     def __init__(self, container_type):
@@ -67,6 +76,7 @@ class Docker:
         elif self.container_type == 'notebook':
             command = ['docker', 'run', '-p', '127.0.0.1:%d:8000' % MINIAN_NOTEBOOK_PORT, '-it', '--rm', self.container_name]
 
+        print(MOTD)
         exec_command(command)
 
     def _image_name(self):
