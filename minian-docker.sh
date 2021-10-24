@@ -1,6 +1,7 @@
 #!/bin/bash
 
 DOCKER=${DOCKER:-docker}
+MINIAN_NOTEBOOK_PORT=${MINIAN_NOTEBOOK_PORT:-8000}
 
 get_mount_args() {
     args="-v $(pwd):/app -w /app"
@@ -70,4 +71,13 @@ bash() {
     args="$(get_mount_args) ${extra_arga}"
 
     $DOCKER run -it --rm $args $(get_local_container_name base) bash
+}
+
+notebook() {
+  extra_arga="$@"
+  update notebook || exit 1
+  build notebook || exit 1
+  args="$(get_mount_args) ${extra_args}"
+
+  $DOCKER run -p 127.0.0.1:${MINIAN_NOTEBOOK_PORT}:8000 -it --rm ${args} $(get_local_container_name notebook) || log "Failed to launch the notebook server."
 }
