@@ -46,7 +46,7 @@ class Docker:
 
     def build(self):
         building_docker_command = [
-            'echo', '-e', self._building_docker_commands()
+            'echo', self._building_docker_commands()
         ]
         command = [
             'docker', 'build',
@@ -79,10 +79,12 @@ class Docker:
         elif self.container_type == 'notebook':
             docker_option = ['-p', '127.0.0.1:%d:8000' % MINIAN_NOTEBOOK_PORT]
 
-        command = docker_command.extend(docker_option).append(docker_exec)
+        docker_command.extend(docker_option)
+        docker_command.append(self.container_name)
+        docker_command.append(docker_exec)
 
         print(MOTD)
-        exec_command(command)
+        exec_command(docker_command)
 
     def _image_name(self):
         return '%s/%s' % (DOCKER_OWNER_NAME, self._container_name())
