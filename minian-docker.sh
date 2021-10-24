@@ -21,16 +21,19 @@ log() {
 }
 
 update() {
+  log "Fetching Docker image for $(get_container_name $1) ..."
   $DOCKER pull $(get_container_name $1)
 }
 
 build() {
   tag=$1
+  log "Build Docker container for $(get_local_container_name $tag) ..."
   __build $(get_container_name $tag) $(get_local_container_name $tag) || exit 1
 }
 
 __build() {
   local_name=$2
+  echo $(__docker_structure $1)
   $DOCKER build -t ${local_name} - $(__docker_structure $1)
 
   if [ $? -ne 0 ]; then
@@ -50,7 +53,7 @@ __docker_structure() {
 
   log "Configuring a local container for user $uname ($uid) in group $gname ($gid)"
 
-  echo <<EOS
+  STRUCTURE=`cat <<- EOS
   from ${remote_name}
 
   run mkdir -p /home
@@ -62,6 +65,9 @@ __docker_structure() {
 
   user $uname
 EOS
+`
+
+  echo $STRUCTURE
 }
 
 bash() {
