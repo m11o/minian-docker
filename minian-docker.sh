@@ -81,3 +81,14 @@ notebook() {
 
   $DOCKER run -p 127.0.0.1:${MINIAN_NOTEBOOK_PORT}:8000 -it --rm ${args} $(get_local_container_name notebook) || log "Failed to launch the notebook server."
 }
+
+subcommand=${1:-notebook}
+shift 1
+case "${subcommand}" in
+  bash) bash "$@" ;;
+  notebook) notebook "$@" ;;
+  *)
+    echo "Usage"
+    echo "$0 [bash|notebook|help]"
+    ;;
+esac
