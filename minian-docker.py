@@ -72,7 +72,7 @@ class Docker:
                 sys.exit()
 
         docker_command = ['docker', 'run', '-it', '--rm']
-        docker_exec = ''
+        docker_exec = None
         docker_option = []
         if self.container_type == 'bash':
             docker_exec = 'bash'
@@ -81,8 +81,10 @@ class Docker:
 
         docker_command.extend(docker_option)
         docker_command.append(self.container_name)
-        docker_command.append(docker_exec)
+        if docker_exec is not None:
+            docker_command.append(docker_exec)
 
+        self.logger.info(' '.join(docker_command))
         print(MOTD)
         exec_command(docker_command)
 
