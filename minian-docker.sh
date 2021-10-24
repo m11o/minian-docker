@@ -21,7 +21,7 @@ log() {
 }
 
 update() {
-  $DOCKER pull $(get_countainer_name $1)
+  $DOCKER pull $(get_container_name $1)
 }
 
 build() {
@@ -31,7 +31,7 @@ build() {
 
 __build() {
   local_name=$2
-  $DOCKER build -t ${local_name} - ${__docker_structure}
+  $DOCKER build -t ${local_name} - $(__docker_structure $1)
 
   if [ $? -ne 0 ]; then
       log Build failed.
