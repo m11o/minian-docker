@@ -13,6 +13,7 @@ __version__ = "0.0.0.1"
 
 ENABLE_CONTAINER_TYPES = ['bash', 'notebook']
 MINIAN_NOTEBOOK_PORT = os.environ.get('MINIAN_NOTEBOOK_PORT', 8000)
+DOCKER_OWNER_NAME = 'velonica2227'
 MOTD = """
           ____()()
          /      @@
@@ -80,9 +81,7 @@ class Docker:
         exec_command(command)
 
     def _image_name(self):
-        if self.container_type == 'bash':
-            return 'velonica2227/minian-docker-base'
-        return 'velonica2227/minian-docker-%s' % self.container_type
+        return '%s/%s' % (DOCKER_OWNER_NAME, self._container_name())
 
     def _container_name(self):
         if self.container_type == 'bash':
