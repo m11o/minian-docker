@@ -160,8 +160,8 @@ def _parse_args():
 
 if __name__ == "__main__":
     args, _ = _parse_args()
-    docker = Docker(args.container)
 
+    docker = Docker(args.container)
     docker.update()
     docker.build()
     docker.run()
