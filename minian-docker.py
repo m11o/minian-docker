@@ -71,11 +71,15 @@ class Docker:
                 self.logger.error('Fail to launch minian in docker.')
                 sys.exit()
 
-        command = []
+        docker_command = ['docker', 'run', '-it', '--rm']
+        docker_exec = ''
+        docker_option = []
         if self.container_type == 'bash':
-            command = ['docker', 'run', '-it', '--rm', self.container_name, 'bash']
+            docker_exec = 'bash'
         elif self.container_type == 'notebook':
-            command = ['docker', 'run', '-p', '127.0.0.1:%d:8000' % MINIAN_NOTEBOOK_PORT, '-it', '--rm', self.container_name]
+            docker_option = ['-p', '127.0.0.1:%d:8000' % MINIAN_NOTEBOOK_PORT]
+
+        command = docker_command.extend(docker_option).append(docker_exec)
 
         print(MOTD)
         exec_command(command)
