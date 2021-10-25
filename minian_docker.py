@@ -9,7 +9,7 @@ import os
 
 from argparse import ArgumentParser
 
-__version__ = "0.0.0.1"
+__version__ = "0.0.0.4"
 
 ENABLE_CONTAINER_TYPES = ['bash', 'notebook']
 MINIAN_NOTEBOOK_PORT = os.environ.get('MINIAN_NOTEBOOK_PORT', 8000)
