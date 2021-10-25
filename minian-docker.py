@@ -73,7 +73,7 @@ class Docker:
                 self.logger.error('Fail to launch minian in docker.')
                 sys.exit()
 
-        docker_command = ['docker', 'run', '-it', '--rm']
+        docker_command = ['docker', 'run', '-it', '--rm', self._docker_mount_args()]
         docker_exec = None
         docker_option = []
         if self.container_type == 'bash':
@@ -138,6 +138,12 @@ class Docker:
             self.logger.error('The container is not available!')
             sys.exit()
 
+    def _docker_mount_args(self):
+        current_director = subprocess.run(['pwd'], capture_output=True, text=True).stdout.strip()
+
+        self.logger.info('Mounted current Directory: %s' % current_director)
+        return '-v %s:/app -w /app' % current_director
+
     @staticmethod
     def _fetch_host_info():
         def exec_command(command):
@@ -154,6 +160,7 @@ class Docker:
         gid   = exec_command(gid_command)
 
         return [uname, uid, gname, gid]
+
 
 
 def _parse_args():
