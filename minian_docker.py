@@ -174,11 +174,14 @@ def _parse_args():
     )
     return parser.parse_known_args()
 
-
-if __name__ == "__main__":
+def main():
     args, _ = _parse_args()
 
     docker = Docker(args.container)
     docker.update()
     docker.build()
     docker.run()
+
+
+if __name__ == "__main__":
+    main()
