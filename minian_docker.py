@@ -9,7 +9,7 @@ import os
 
 from argparse import ArgumentParser
 
-__version__ = "0.0.0.1"
+__version__ = "0.0.0.4"
 
 ENABLE_CONTAINER_TYPES = ['bash', 'notebook']
 MINIAN_NOTEBOOK_PORT = os.environ.get('MINIAN_NOTEBOOK_PORT', 8000)
@@ -174,11 +174,14 @@ def _parse_args():
     )
     return parser.parse_known_args()
 
-
-if __name__ == "__main__":
+def main():
     args, _ = _parse_args()
 
     docker = Docker(args.container)
     docker.update()
     docker.build()
     docker.run()
+
+
+if __name__ == "__main__":
+    main()
