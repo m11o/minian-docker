@@ -4,6 +4,8 @@ import textwrap
 import sys
 import os
 
+from motd import MOTD
+
 ENABLE_CONTAINER_TYPES = ['bash', 'notebook']
 MINIAN_NOTEBOOK_PORT = os.environ.get('MINIAN_NOTEBOOK_PORT', 8000)
 DOCKER_OWNER_NAME = 'velonica2227'
