@@ -1,14 +1,16 @@
+import sys
+import os
+
+sys.path.insert(1, os.path.abspath('./minian_docker'))
+
 from setuptools import setup
 from codecs import open
-from os import path
 
 import minian_docker
 
-package_name     = 'minian-docker'
+package_name     = 'minian_docker'
 package_dir_name = 'minian_docker'
 package_dir      = dict([(package_name, package_dir_name)])
-
-root_dir         = path.abspath(path.dirname(__file__))
 
 with open('README.md', encoding='utf-8') as f:
     long_description = f.read()
@@ -25,7 +27,7 @@ setup(
     license='GNU GPLv3',
     keywords='minian,docker,minian-docker',
     packages=[package_name],
-    package_dir=package_dir,
+    #package_dir=package_dir,
     install_requires=[],
     classifiers=[
         'Programming Language :: Python :: 3',
@@ -36,7 +38,6 @@ setup(
     maintainer='m11o',
     maintainer_email='velonica2227@outlook.jp',
     entry_points={
-        'console_scripts': ['minian-docker = minian_docker.bin:main']
-    },
-    py_modules=['minian_docker']
+        'console_scripts': ['minian-docker = minian_docker:main']
+    }
 )

@@ -2,7 +2,7 @@
 # -*- coding utf-8 -*-
 
 from argparse import ArgumentParser
-from docker import Docker
+from minian_docker.docker import Docker
 
 def _parse_args():
     parser = ArgumentParser('minian-docker')
