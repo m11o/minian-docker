@@ -9,8 +9,6 @@ from codecs import open
 import minian_docker
 
 package_name     = 'minian_docker'
-package_dir_name = 'minian_docker'
-package_dir      = dict([(package_name, package_dir_name)])
 
 with open('README.md', encoding='utf-8') as f:
     long_description = f.read()
@@ -27,7 +25,6 @@ setup(
     license='GNU GPLv3',
     keywords='minian,docker,minian-docker',
     packages=[package_name],
-    #package_dir=package_dir,
     install_requires=[],
     classifiers=[
         'Programming Language :: Python :: 3',
