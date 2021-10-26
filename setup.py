@@ -36,7 +36,7 @@ setup(
     maintainer='m11o',
     maintainer_email='velonica2227@outlook.jp',
     entry_points={
-        'console_scripts': ['minian-docker = minian_docker:main']
+        'console_scripts': ['minian-docker = minian_docker.bin:main']
     },
     py_modules=['minian_docker']
 )
