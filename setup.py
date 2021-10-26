@@ -4,8 +4,11 @@ from os import path
 
 import minian_docker
 
-package_name = 'minian-docker'
-root_dir = path.abspath(path.dirname(__file__))
+package_name     = 'minian-docker'
+package_dir_name = 'minian_docker'
+package_dir      = dict([(package_name, package_dir_name)])
+
+root_dir         = path.abspath(path.dirname(__file__))
 
 with open('README.md', encoding='utf-8') as f:
     long_description = f.read()
@@ -22,6 +25,7 @@ setup(
     license='GNU GPLv3',
     keywords='minian,docker,minian-docker',
     packages=[package_name],
+    package_dir=package_dir,
     install_requires=[],
     classifiers=[
         'Programming Language :: Python :: 3',
