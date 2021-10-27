@@ -1,10 +1,12 @@
 import logging
+import platform
 import subprocess
 import textwrap
 import sys
 import os
 
 from minian_docker.motd import MOTD
+from minian_docker.host_info import fetch_host_info
 
 ENABLE_CONTAINER_TYPES = ['bash', 'notebook']
 MINIAN_NOTEBOOK_PORT = os.environ.get('MINIAN_NOTEBOOK_PORT', 8000)
@@ -30,22 +32,26 @@ class Docker:
             sys.exit()
 
     def build(self):
-        building_docker_command = [
-            'echo', self._building_docker_commands()
-        ]
-        command = [
-            'docker', 'build',
-            '-t', self.container_name,
-            '-'
-        ]
-        echo_res   = subprocess.Popen(building_docker_command, stdout=subprocess.PIPE)
-        docker_res = subprocess.Popen(command, stdin=echo_res.stdout, stdout=subprocess.PIPE)
-        echo_res.stdout.close()
-        docker_res.communicate()
+        if platform.system() == 'Windows':
+            pass # do nothing
+        else:
+            building_docker_command = [
+                'echo', self._building_docker_commands()
+            ]
+            command = [
+                'docker', 'build',
+                '-t', self.container_name,
+                '-'
+            ]
+            echo_res   = subprocess.Popen(building_docker_command, stdout=subprocess.PIPE)
+            docker_res = subprocess.Popen(command, stdin=echo_res.stdout, stdout=subprocess.PIPE)
+            echo_res.stdout.close()
+            docker_res.communicate()
 
-        if docker_res.returncode != 0:
-            self.logger.error('Build failed')
-            sys.exit()
+            if docker_res.returncode != 0:
+                self.logger.error('Build failed')
+                sys.exit()
+
         self.logger.info('Build succeeded.')
 
     def run(self):
@@ -66,7 +72,11 @@ class Docker:
             docker_option = ['-p', '127.0.0.1:%d:8000' % MINIAN_NOTEBOOK_PORT]
 
         docker_command.extend(docker_option)
-        docker_command.append(self.container_name)
+        if platform.system() == 'Windows':
+            docker_command.append(self.image_name)
+        else:
+            docker_command.append(self.container_name)
+
         if docker_exec is not None:
             docker_command.append(docker_exec)
 
@@ -92,7 +102,7 @@ class Docker:
         return logging.getLogger(__name__)
 
     def _building_docker_commands(self):
-        host_uname, host_uid, host_gname, host_gid = self._fetch_host_info()
+        host_uname, host_uid, host_gname, host_gid = fetch_host_info()
         self.logger.info("Configuring a local container for user %s (%s) in group %s (%s)" % (host_uname, host_uid, host_gname, host_gid))
 
         commands = textwrap.dedent("""
@@ -123,24 +133,12 @@ class Docker:
             sys.exit()
 
     def _docker_mount_args(self):
-        current_directory = subprocess.run(['pwd'], capture_output=True, text=True).stdout.strip()
+        command = []
+        if platform.system() == 'Windows':
+            command.append('chdir')
+        else:
+            command.append('pwd')
+        current_directory = subprocess.run(command, capture_output=True, text=True, shell=True).stdout.strip()
         self.logger.info('Mounted current Directory: %s' % current_directory)
 
         return ['-v', '%s:/app' % current_directory, '-w', '/app']
-
-    @staticmethod
-    def _fetch_host_info():
-        def exec_command(command):
-            return subprocess.run(command, capture_output=True, text=True).stdout.strip()
-
-        uname_command = ['id', '-un']
-        uid_command   = ['id', '-u']
-        gname_command = ['id', '-gn']
-        gid_command   = ['id', '-g']
-
-        uname = exec_command(uname_command)
-        uid   = exec_command(uid_command)
-        gname = exec_command(gname_command)
-        gid   = exec_command(gid_command)
-
-        return [uname, uid, gname, gid]
