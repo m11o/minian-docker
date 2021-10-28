@@ -7,6 +7,7 @@ import os
 
 from minian_docker.motd import MOTD
 from minian_docker.host_info import fetch_host_info
+from minian_docker.agent import is_windows
 
 ENABLE_CONTAINER_TYPES = ['bash', 'notebook']
 MINIAN_NOTEBOOK_PORT = os.environ.get('MINIAN_NOTEBOOK_PORT', 8000)
@@ -32,7 +33,7 @@ class Docker:
             sys.exit()
 
     def build(self):
-        if platform.system() == 'Windows':
+        if is_windows():
             pass # do nothing
         else:
             building_docker_command = [
@@ -72,7 +73,7 @@ class Docker:
             docker_option = ['-p', '127.0.0.1:%d:8000' % MINIAN_NOTEBOOK_PORT]
 
         docker_command.extend(docker_option)
-        if platform.system() == 'Windows':
+        if is_windows():
             docker_command.append(self.image_name)
         else:
             docker_command.append(self.container_name)
@@ -134,7 +135,7 @@ class Docker:
 
     def _docker_mount_args(self):
         command = []
-        if platform.system() == 'Windows':
+        if is_windows():
             command.append('chdir')
         else:
             command.append('pwd')
