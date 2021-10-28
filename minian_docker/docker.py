@@ -34,24 +34,24 @@ class Docker:
 
     def build(self):
         if is_windows():
-            pass # do nothing
-        else:
-            building_docker_command = [
-                'echo', self._building_docker_commands()
-            ]
-            command = [
-                'docker', 'build',
-                '-t', self.container_name,
-                '-'
-            ]
-            echo_res   = subprocess.Popen(building_docker_command, stdout=subprocess.PIPE)
-            docker_res = subprocess.Popen(command, stdin=echo_res.stdout, stdout=subprocess.PIPE)
-            echo_res.stdout.close()
-            docker_res.communicate()
+            return # do nothing
 
-            if docker_res.returncode != 0:
-                self.logger.error('Build failed')
-                sys.exit()
+        building_docker_command = [
+            'echo', self._building_docker_commands()
+        ]
+        command = [
+            'docker', 'build',
+            '-t', self.container_name,
+            '-'
+        ]
+        echo_res   = subprocess.Popen(building_docker_command, stdout=subprocess.PIPE)
+        docker_res = subprocess.Popen(command, stdin=echo_res.stdout, stdout=subprocess.PIPE)
+        echo_res.stdout.close()
+        docker_res.communicate()
+
+        if docker_res.returncode != 0:
+            self.logger.error('Build failed')
+            sys.exit()
 
         self.logger.info('Build succeeded.')
 
