@@ -73,10 +73,7 @@ class Docker:
             docker_option = ['-p', '127.0.0.1:%d:8000' % MINIAN_NOTEBOOK_PORT]
 
         docker_command.extend(docker_option)
-        if is_windows():
-            docker_command.append(self.image_name)
-        else:
-            docker_command.append(self.container_name)
+        docker_command.append(self.image_name if is_windows() else self.container_name)
 
         if docker_exec is not None:
             docker_command.append(docker_exec)
