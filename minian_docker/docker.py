@@ -134,12 +134,8 @@ class Docker:
             sys.exit()
 
     def _docker_mount_args(self):
-        command = []
-        if is_windows():
-            command.append('chdir')
-        else:
-            command.append('pwd')
-        current_directory = subprocess.run(command, capture_output=True, text=True, shell=True).stdout.strip()
+        command = 'chdir' if is_windows() else 'pwd'
+        current_directory = subprocess.run([command], capture_output=True, text=True, shell=True).stdout.strip()
         self.logger.info('Mounted current Directory: %s' % current_directory)
 
         return ['-v', '%s:/app' % current_directory, '-w', '/app']
