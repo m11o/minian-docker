@@ -36,10 +36,14 @@ docker_push:
 	@make docker_base_push
 	@make docker_notebook_push
 
+base_docker_image_id = $(shell docker images --format '{{.ID}}' minian-docker-base)
 .PHONY: docker_base_push
 docker_base_push:
-	docker push velonica2227/minian-docker-base
+	docker tag $(base_docker_image_id) velonica2227/minian-docker-base
+	docker push velonica2227/minian-docker-base:latest
 
+notebook_docker_image_id = $(shell docker images --format '{{.ID}}' minian-docker-notebook)
 .PHONY: docker_notebook_push
 docker_notebook_push:
-	docker push velonica2227/minian-docker-notebook
+	docker tag $(notebook_docker_image_id) velonica2227/minian-docker-notebook
+	docker push velonica2227/minian-docker-notebook:latest
