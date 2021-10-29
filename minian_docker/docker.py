@@ -1,5 +1,4 @@
 import logging
-import platform
 import subprocess
 import textwrap
 import sys
