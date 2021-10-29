@@ -25,3 +25,16 @@ docker_base_build: Dockerfile.base
 .PHONY: docker_notebook_build
 docker_notebook_build: Docker.notebook
 	docker build -t minian-docker-notebook -f ./Dockerfile.notebook .
+
+.PHONY: docker_push
+docker_push:
+	@make docker_base_push
+	@make docker_notebook_push
+
+.PHONY: docker_base_push
+docker_base_push:
+	docker push velonica2227/minian-docker-base
+
+.PHONY: docker_notebook_push
+docker_notebook_push:
+	docker push velonica2227/minian-docker-notebook
