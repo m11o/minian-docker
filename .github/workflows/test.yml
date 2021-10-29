@@ -15,15 +15,11 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-latest, macOS-latest, windows-latest]
+        os: [ubuntu-latest]
         python-version: [3.7, 3.8, 3.9] #3.9 only failing for tables on macos and windows; mwm 6302021
         include:
           - os: ubuntu-latest
             path: ~/.cache/pip
-          - os: macOS-latest
-            path: ~/Library/Caches/pip
-          - os: windows-latest
-            path: ~\AppData\Local\pip\Cache
 
     steps:
       - name: Checkout code
