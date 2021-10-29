@@ -12,6 +12,7 @@ ENABLE_CONTAINER_TYPES = ['bash', 'notebook']
 MINIAN_NOTEBOOK_PORT = os.environ.get('MINIAN_NOTEBOOK_PORT', 8000)
 DOCKER_OWNER_NAME = 'velonica2227'
 
+
 class Docker:
     def __init__(self, container_type):
         self.logger = self._build_logger()
@@ -27,13 +28,14 @@ class Docker:
         command = ['docker', 'pull', self.image_name]
         try:
             subprocess.run(command, check=True)
-        except:
+        except Exception as e:
+            self.logger.error(e)
             self.logger.error('Failed updating for docker image for %s' % self.image_name)
             sys.exit()
 
     def build(self):
         if is_windows():
-            return # do nothing
+            return  # do nothing
 
         building_docker_command = [
             'echo', self._building_docker_commands()
@@ -43,7 +45,7 @@ class Docker:
             '-t', self.container_name,
             '-'
         ]
-        echo_res   = subprocess.Popen(building_docker_command, stdout=subprocess.PIPE)
+        echo_res = subprocess.Popen(building_docker_command, stdout=subprocess.PIPE)
         docker_res = subprocess.Popen(command, stdin=echo_res.stdout, stdout=subprocess.PIPE)
         echo_res.stdout.close()
         docker_res.communicate()
@@ -58,7 +60,8 @@ class Docker:
         def exec_command(command):
             try:
                 subprocess.run(command, check=True)
-            except:
+            except Exception as e:
+                self.logger.error(e)
                 self.logger.error('Fail to launch minian in docker.')
                 sys.exit()
 
@@ -100,7 +103,14 @@ class Docker:
 
     def _building_docker_commands(self):
         host_uname, host_uid, host_gname, host_gid = fetch_host_info()
-        self.logger.info("Configuring a local container for user %s (%s) in group %s (%s)" % (host_uname, host_uid, host_gname, host_gid))
+        self.logger.info(
+            "Configuring a local container for user %s (%s) in group %s (%s)" % (
+                host_uname,
+                host_uid,
+                host_gname,
+                host_gid
+            )
+        )
 
         commands = textwrap.dedent("""
             FROM {remote_name}
