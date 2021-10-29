@@ -1,15 +1,20 @@
+.PHONY: clean
 clean:
 	rm -rf dist/
 
+.PHONY: prepare_build
 prepare_build:
 	python3 -m pip install --upgrade twine wheel
 
+.PHONY: build
 build: clean prepare_build
 	python3 setup.py sdist bdist_wheel
 
+.PHONY: upload_test
 upload_test: prepare_build
 	python3 -m twine upload --repository testpypi dist/*
 
+.PHONY: upload
 upload: prepare_build
 	python3 -m twine upload dist/*
 
