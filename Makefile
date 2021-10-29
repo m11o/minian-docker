@@ -47,3 +47,7 @@ notebook_docker_image_id = $(shell docker images --format '{{.ID}}' minian-docke
 docker_notebook_push:
 	docker tag $(notebook_docker_image_id) velonica2227/minian-docker-notebook
 	docker push velonica2227/minian-docker-notebook:latest
+
+.PHONY: lint
+lint:
+	flake8 --show-source minian_docker/
