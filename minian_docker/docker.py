@@ -31,7 +31,7 @@ class Docker:
         except Exception as e:
             self.logger.error(e)
             self.logger.error('Failed updating for docker image for %s' % self.image_name)
-            sys.exit()
+            sys.exit(status=1)
 
     def build(self):
         if is_windows():
@@ -52,7 +52,7 @@ class Docker:
 
         if docker_res.returncode != 0:
             self.logger.error('Build failed')
-            sys.exit()
+            sys.exit(status=1)
 
         self.logger.info('Build succeeded.')
 
@@ -63,7 +63,7 @@ class Docker:
             except Exception as e:
                 self.logger.error(e)
                 self.logger.error('Fail to launch minian in docker.')
-                sys.exit()
+                sys.exit(status=1)
 
         docker_command = ['docker', 'run', '-it', '--rm']
         docker_command.extend(self._docker_mount_args())
@@ -137,7 +137,7 @@ class Docker:
     def _check_enable_container_type(self):
         if self.container_type not in ENABLE_CONTAINER_TYPES:
             self.logger.error('The container is not available!')
-            sys.exit()
+            sys.exit(status=1)
 
     def _docker_mount_args(self):
         command = 'chdir' if is_windows() else 'pwd'

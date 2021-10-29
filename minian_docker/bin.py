@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding utf-8 -*-
 
+import sys
+
 from argparse import ArgumentParser
 from minian_docker.docker import Docker
 
@@ -26,4 +28,8 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        print(e)
+        sys.exit(status=1)
