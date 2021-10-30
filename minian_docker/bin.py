@@ -8,12 +8,12 @@ from minian_docker.docker import Docker
 
 
 def _parse_args():
-    parser = ArgumentParser('minian-docker')
+    parser = ArgumentParser('minian-docker', description='It is command to launch for minian in Docker container.')
     parser.add_argument(
         'container',
         type=str,
         choices=['notebook', 'bash'],
-        help='The container to launch.'
+        help='select a docker container type to launch for minian'
     )
     return parser.parse_known_args()
 
