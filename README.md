@@ -1,3 +1,5 @@
+[![test](https://github.com/masahito1997/minian-docker/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/masahito1997/minian-docker/actions/workflows/test.yml)
+
 # MiniAn-docker
 
 MiniAn-docker is docker builder for [Minian](https://github.com/DeniseCaiLab/minian). This package provides two type containers. ( `bash` and `notebook` ).
