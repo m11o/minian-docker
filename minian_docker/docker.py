@@ -3,10 +3,11 @@ import subprocess
 import textwrap
 import sys
 import os
+import re
 
 from minian_docker.motd import MOTD
 from minian_docker.host_info import fetch_host_info
-from minian_docker.agent import is_windows
+from minian_docker.agent import is_windows, is_linux, is_macos
 
 ENABLE_CONTAINER_TYPES = ['bash', 'notebook']
 MINIAN_NOTEBOOK_PORT = os.environ.get('MINIAN_NOTEBOOK_PORT', 8000)
@@ -67,6 +68,7 @@ class Docker:
 
         docker_command = ['docker', 'run', '-it', '--rm']
         docker_command.extend(self._docker_mount_args())
+        docker_command.extend(self._docker_x11_args())
         docker_exec = None
         docker_option = []
         if self.container_type == 'bash':
@@ -145,3 +147,35 @@ class Docker:
         self.logger.info('Mounted current Directory: %s' % current_directory)
 
         return ['-v', '%s:/app' % current_directory, '-w', '/app']
+
+    def _docker_x11_args(self):
+        if is_windows():
+            self.logger.info('not working')
+            return []
+
+        if is_linux():
+            return ['-e', 'DISPLAY=unix%s' % os.environ['DISPLAY']]
+        elif is_macos():
+            self.logger.info('using MacOS')
+
+            ifconfig_command = ['ifconfig', 'en0']
+            grep_command = ['grep', 'inet']
+            awk_comand = ['awk', "'$1==\"inet\" {print $2}'"]
+
+            ifconfig_res = subprocess.Popen(ifconfig_command, stdout=subprocess.PIPE)
+            grep_res = subprocess.Popen(grep_command, stdin=ifconfig_res.stdout, stdout=subprocess.PIPE)
+            awk_res = subprocess.Popen(awk_command, stdin=grep_res.stdout, stdout=subprocess.PIPE)
+
+            grep_res.stdout.close()
+            ifconfig_res.stdout.close()
+
+            awk_res.communicate()
+
+            ip = awk_res.stdout
+            display_env = os.environ['DISPLAY']
+            display_matcher = re.search(r'^.*?(:[0-9])$')
+            display_id = display_matcher.group(1)
+            return ['-e', 'DISPLAY=%s%s' % (ip, display_id)]
+        else:
+            self.logger.error('Unknown OS')
+            sys.exit(1)
