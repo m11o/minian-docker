@@ -22,6 +22,7 @@ upload: prepare_build
 docker_build:
 	@make docker_base_build
 	@make docker_notebook_build
+	@make docker_gui_build
 
 .PHONY: docker_base_build
 docker_base_build: Dockerfile.base
@@ -31,10 +32,15 @@ docker_base_build: Dockerfile.base
 docker_notebook_build: Docker.notebook
 	docker build -t minian-docker-notebook -f ./Dockerfile.notebook .
 
+.PHONY: docker_gui_build
+docker_gui_build: Dockerfile.gui
+	docker build -t minian-docker-gui -f ./Dockerfile.gui .
+
 .PHONY: docker_push
 docker_push:
 	@make docker_base_push
 	@make docker_notebook_push
+	@make docker_gui_push
 
 base_docker_image_id = $(shell docker images --format '{{.ID}}' minian-docker-base)
 .PHONY: docker_base_push
@@ -47,6 +53,12 @@ notebook_docker_image_id = $(shell docker images --format '{{.ID}}' minian-docke
 docker_notebook_push:
 	docker tag $(notebook_docker_image_id) velonica2227/minian-docker-notebook
 	docker push velonica2227/minian-docker-notebook:latest
+
+gui_docker_image_id = $(shell docker images --format '{{.ID}}' minian-docker-gui)
+.PHONY: docker_gui_push
+docker_gui_push:
+	docker tag $(gui_docker_image_id) velonica2227/minian-docker-gui
+	docker push velonica2227/minian-docker-gui:latest
 
 .PHONY: lint
 lint:
