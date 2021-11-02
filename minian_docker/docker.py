@@ -75,12 +75,17 @@ class Docker:
             docker_exec = 'bash'
         elif self.container_type == 'notebook':
             docker_option = ['-p', '127.0.0.1:%d:8000' % MINIAN_NOTEBOOK_PORT]
+        elif self.container_type == 'gui':
+            docker_exec = ['python', 'minian_docker/gui/sample.py']
 
         docker_command.extend(docker_option)
         docker_command.append(self.image_name if is_windows() else self.container_name)
 
         if docker_exec is not None:
-            docker_command.append(docker_exec)
+            if type(docker_exec) is list:
+                docker_command.extend(docker_exec)
+            else:
+                docker_command.append(docker_exec)
 
         self.logger.info(' '.join(docker_command))
         print(MOTD)
