@@ -9,7 +9,7 @@ from motd import MOTD
 from host_info import fetch_host_info
 from agent import is_windows, is_linux, is_macos
 
-ENABLE_CONTAINER_TYPES = ['bash', 'notebook']
+ENABLE_CONTAINER_TYPES = ['bash', 'notebook', 'gui']
 MINIAN_NOTEBOOK_PORT = os.environ.get('MINIAN_NOTEBOOK_PORT', 8000)
 DOCKER_OWNER_NAME = 'velonica2227'
 
