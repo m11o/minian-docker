@@ -160,7 +160,7 @@ class Docker:
 
             ifconfig_command = ['ifconfig', 'en0']
             grep_command = ['grep', 'inet']
-            awk_comand = ['awk', "'$1==\"inet\" {print $2}'"]
+            awk_command = ['awk', "'$1==\"inet\" {print $2}'"]
 
             ifconfig_res = subprocess.Popen(ifconfig_command, stdout=subprocess.PIPE)
             grep_res = subprocess.Popen(grep_command, stdin=ifconfig_res.stdout, stdout=subprocess.PIPE)
@@ -173,7 +173,7 @@ class Docker:
 
             ip = awk_res.stdout
             display_env = os.environ['DISPLAY']
-            display_matcher = re.search(r'^.*?(:[0-9])$')
+            display_matcher = re.search(r'^.*?(:[0-9])$', display_env)
             display_id = display_matcher.group(1)
             return ['-e', 'DISPLAY=%s%s' % (ip, display_id)]
         else:
