@@ -4,7 +4,7 @@
 import sys
 
 from argparse import ArgumentParser
-from minian_docker.docker import Docker
+from docker import Docker
 
 
 def _parse_args():
@@ -12,7 +12,7 @@ def _parse_args():
     parser.add_argument(
         'container',
         type=str,
-        choices=['notebook', 'bash'],
+        choices=['notebook', 'bash', 'gui'],
         help='select a docker container type to launch for minian'
     )
     return parser.parse_known_args()
