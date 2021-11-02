@@ -8,7 +8,7 @@ from codecs import open
 
 import minian_docker
 
-package_name     = 'minian_docker'
+package_name = 'minian_docker'
 
 with open('README.md', encoding='utf-8') as f:
     long_description = f.read()

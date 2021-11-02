@@ -4,7 +4,7 @@
 import sys
 
 from argparse import ArgumentParser
-from minian_docker.docker import Docker
+from docker import Docker
 
 
 def _parse_args():
