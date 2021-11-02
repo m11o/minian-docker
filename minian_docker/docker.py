@@ -5,9 +5,9 @@ import sys
 import os
 import re
 
-from minian_docker.motd import MOTD
-from minian_docker.host_info import fetch_host_info
-from minian_docker.agent import is_windows, is_linux, is_macos
+from motd import MOTD
+from host_info import fetch_host_info
+from agent import is_windows, is_linux, is_macos
 
 ENABLE_CONTAINER_TYPES = ['bash', 'notebook']
 MINIAN_NOTEBOOK_PORT = os.environ.get('MINIAN_NOTEBOOK_PORT', 8000)
