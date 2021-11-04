@@ -32,7 +32,7 @@ class Docker:
         except Exception as e:
             self.logger.error(e)
             self.logger.error('Failed updating for docker image for %s' % self.image_name)
-            sys.exit(status=1)
+            sys.exit()
 
     def build(self):
         if is_windows():
@@ -53,7 +53,7 @@ class Docker:
 
         if docker_res.returncode != 0:
             self.logger.error('Build failed')
-            sys.exit(status=1)
+            sys.exit()
 
         self.logger.info('Build succeeded.')
 
@@ -64,7 +64,7 @@ class Docker:
             except Exception as e:
                 self.logger.error(e)
                 self.logger.error('Fail to launch minian in docker.')
-                sys.exit(status=1)
+                sys.exit()
 
         docker_command = ['docker', 'run', '-it', '--rm']
         docker_command.extend(self._docker_mount_args())
@@ -144,7 +144,7 @@ class Docker:
     def _check_enable_container_type(self):
         if self.container_type not in ENABLE_CONTAINER_TYPES:
             self.logger.error('The container is not available!')
-            sys.exit(status=1)
+            sys.exit()
 
     def _docker_mount_args(self):
         command = 'chdir' if is_windows() else 'pwd'
@@ -159,7 +159,13 @@ class Docker:
             return []
 
         if is_linux():
-            return ['-e', 'DISPLAY=unix%s' % os.environ['DISPLAY']]
+            display_env = 'DISPLAY=unix%s' % os.environ['DISPLAY']
+            xauthority_env = '%s:/home/developer/.Xauthority' % os.environ['XAUTHORITY']
+            return [
+                '-e', display_env,
+                '-v', '/tmp/.X11-unix:/tmp/.X11-unix',
+                '-v', xauthority_env
+            ]
         elif is_macos():
             self.logger.info('using MacOS')
 
@@ -183,4 +189,4 @@ class Docker:
             return ['-e', 'DISPLAY=%s%s' % (ip, display_id)]
         else:
             self.logger.error('Unknown OS')
-            sys.exit(1)
+            sys.exit()
