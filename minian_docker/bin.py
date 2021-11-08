@@ -32,4 +32,4 @@ if __name__ == "__main__":
         main()
     except Exception as e:
         print(e)
-        sys.exit(status=1)
+        sys.exit()
