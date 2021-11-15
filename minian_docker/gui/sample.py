@@ -1,7 +1,14 @@
-import wx
+import PySimpleGUI as sg
 
-app = wx.App()
-frame = wx.Frame(None, title='Simple application')
-frame.show()
+layout = [
+    [sg.Text('My one-shot window.')],
+    [sg.InputText()],
+    [sg.Submit(), sg.Cancel()]
+]
 
-app.MainLoop()
+window = sg.Window('Window Title', layout)
+event, values = window.read()
+window.close()
+
+text_input = values[0]
+sg.popup('You entered', text_input)
