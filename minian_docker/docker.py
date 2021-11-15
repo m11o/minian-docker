@@ -171,22 +171,25 @@ class Docker:
 
             ifconfig_command = ['ifconfig', 'en0']
             grep_command = ['grep', 'inet']
-            awk_command = ['awk', "'$1==\"inet\" {print $2}'"]
 
             ifconfig_res = subprocess.Popen(ifconfig_command, stdout=subprocess.PIPE)
             grep_res = subprocess.Popen(grep_command, stdin=ifconfig_res.stdout, stdout=subprocess.PIPE)
-            awk_res = subprocess.Popen(awk_command, stdin=grep_res.stdout, stdout=subprocess.PIPE)
+            inet_value = grep_res.communicate()[0].decode('utf-8')
+            ip_match = re.search(r'inet\s(([0-9]+?.?){4})\s', inet_value)
+            if ip_match is None:
+                print(type(ip_match))
+                sys.exit()
 
-            grep_res.stdout.close()
-            ifconfig_res.stdout.close()
-
-            awk_res.communicate()
-
-            ip = awk_res.stdout
-            display_env = os.environ['DISPLAY']
-            display_matcher = re.search(r'^.*?(:[0-9])$', display_env)
-            display_id = display_matcher.group(1)
-            return ['-e', 'DISPLAY=%s%s' % (ip, display_id)]
+            ip = ip_match.group(1)
+            display_id = ''
+            display_env = os.environ.get('DISPLAY', '')
+            if display_env != '':
+                display_matcher = re.search(r'^.*?(:[0-9])$', display_env)
+                display_id = display_matcher.group(1)
+            return [
+                '-e', 'DISPLAY=%s%s' % (ip, display_id),
+                '--net=host'
+            ]
         else:
             self.logger.error('Unknown OS')
             sys.exit()
