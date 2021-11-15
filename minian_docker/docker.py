@@ -77,7 +77,6 @@ class Docker:
             docker_option = ['-p', '127.0.0.1:%d:8000' % MINIAN_NOTEBOOK_PORT]
         elif self.container_type == 'gui':
             docker_exec = ['python', 'minian_docker/gui/sample.py']
-            #docker_exec = 'bash'
 
         docker_command.extend(docker_option)
         docker_command.append(self.image_name if is_windows() else self.container_name)
