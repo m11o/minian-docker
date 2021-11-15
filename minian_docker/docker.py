@@ -3,12 +3,13 @@ import subprocess
 import textwrap
 import sys
 import os
+import re
 
 from motd import MOTD
 from host_info import fetch_host_info
-from agent import is_windows
+from agent import is_windows, is_linux, is_macos
 
-ENABLE_CONTAINER_TYPES = ['bash', 'notebook']
+ENABLE_CONTAINER_TYPES = ['bash', 'notebook', 'gui']
 MINIAN_NOTEBOOK_PORT = os.environ.get('MINIAN_NOTEBOOK_PORT', 8000)
 DOCKER_OWNER_NAME = 'velonica2227'
 
@@ -31,7 +32,7 @@ class Docker:
         except Exception as e:
             self.logger.error(e)
             self.logger.error('Failed updating for docker image for %s' % self.image_name)
-            sys.exit(status=1)
+            sys.exit()
 
     def build(self):
         if is_windows():
@@ -52,7 +53,7 @@ class Docker:
 
         if docker_res.returncode != 0:
             self.logger.error('Build failed')
-            sys.exit(status=1)
+            sys.exit()
 
         self.logger.info('Build succeeded.')
 
@@ -63,22 +64,28 @@ class Docker:
             except Exception as e:
                 self.logger.error(e)
                 self.logger.error('Fail to launch minian in docker.')
-                sys.exit(status=1)
+                sys.exit()
 
         docker_command = ['docker', 'run', '-it', '--rm']
         docker_command.extend(self._docker_mount_args())
+        docker_command.extend(self._docker_x11_args())
         docker_exec = None
         docker_option = []
         if self.container_type == 'bash':
             docker_exec = 'bash'
         elif self.container_type == 'notebook':
             docker_option = ['-p', '127.0.0.1:%d:8000' % MINIAN_NOTEBOOK_PORT]
+        elif self.container_type == 'gui':
+            docker_exec = ['python', 'minian_docker/gui/sample.py']
 
         docker_command.extend(docker_option)
         docker_command.append(self.image_name if is_windows() else self.container_name)
 
         if docker_exec is not None:
-            docker_command.append(docker_exec)
+            if type(docker_exec) is list:
+                docker_command.extend(docker_exec)
+            else:
+                docker_command.append(docker_exec)
 
         self.logger.info(' '.join(docker_command))
         print(MOTD)
@@ -137,7 +144,7 @@ class Docker:
     def _check_enable_container_type(self):
         if self.container_type not in ENABLE_CONTAINER_TYPES:
             self.logger.error('The container is not available!')
-            sys.exit(status=1)
+            sys.exit()
 
     def _docker_mount_args(self):
         command = 'chdir' if is_windows() else 'pwd'
@@ -145,3 +152,41 @@ class Docker:
         self.logger.info('Mounted current Directory: %s' % current_directory)
 
         return ['-v', '%s:/app' % current_directory, '-w', '/app']
+
+    def _docker_x11_args(self):
+        if is_windows():
+            self.logger.info('not working')
+            return []
+
+        if is_linux():
+            display_env = 'DISPLAY=unix%s' % os.environ['DISPLAY']
+            xauthority_env = '%s:/home/developer/.Xauthority' % os.environ['XAUTHORITY']
+            return [
+                '-e', display_env,
+                '-v', '/tmp/.X11-unix:/tmp/.X11-unix',
+                '-v', xauthority_env
+            ]
+        elif is_macos():
+            self.logger.info('using MacOS')
+
+            ifconfig_command = ['ifconfig', 'en0']
+            grep_command = ['grep', 'inet']
+            awk_command = ['awk', "'$1==\"inet\" {print $2}'"]
+
+            ifconfig_res = subprocess.Popen(ifconfig_command, stdout=subprocess.PIPE)
+            grep_res = subprocess.Popen(grep_command, stdin=ifconfig_res.stdout, stdout=subprocess.PIPE)
+            awk_res = subprocess.Popen(awk_command, stdin=grep_res.stdout, stdout=subprocess.PIPE)
+
+            grep_res.stdout.close()
+            ifconfig_res.stdout.close()
+
+            awk_res.communicate()
+
+            ip = awk_res.stdout
+            display_env = os.environ['DISPLAY']
+            display_matcher = re.search(r'^.*?(:[0-9])$', display_env)
+            display_id = display_matcher.group(1)
+            return ['-e', 'DISPLAY=%s%s' % (ip, display_id)]
+        else:
+            self.logger.error('Unknown OS')
+            sys.exit()

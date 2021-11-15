@@ -12,7 +12,7 @@ def _parse_args():
     parser.add_argument(
         'container',
         type=str,
-        choices=['notebook', 'bash'],
+        choices=['notebook', 'bash', 'gui'],
         help='select a docker container type to launch for minian'
     )
     return parser.parse_known_args()
@@ -32,4 +32,4 @@ if __name__ == "__main__":
         main()
     except Exception as e:
         print(e)
-        sys.exit(status=1)
+        sys.exit()
